@@ -1,0 +1,52 @@
+apiVersion: core.oam.dev/v1beta1
+kind: ComponentDefinition
+metadata:
+  name: db-postgresql
+  annotations:
+    definition.oam.dev/description: "Describes a deployment with optional service and route"
+spec:
+  workload:
+    definition:
+      apiVersion: apps/v1
+      kind: StatefulSet
+  schematic:
+    cue:
+      template: |
+        output: {
+          apiVersion: "argoproj.io/v1alpha1"
+          kind:       "Application"
+          metadata: name: parameter.name
+          spec: {
+              destination: {
+                  namespace: context.namespace
+                  server: "https://kubernetes.default.svc"
+              }
+              project: "default"
+              source: {
+                  chart: "postgresql"
+                  repoURL: "https://charts.bitnami.com/bitnami"
+                  targetRevision: "11.0.3"
+                  helm: {
+                      parameters: [{
+                          name: "primary.containerSecurityContext.enabled"
+                          value: "false"
+                      },
+                      {
+                          name: "primary.podSecurityContext.enabled"
+                          value: "false"
+                      },]
+                  }
+              }
+              syncPolicy: {
+                  automated: {
+                      prune: true
+                      selfHeal: true
+                  }
+                  syncOptions: {["CreateNamespace=true"]}
+              }
+          }
+        }
+
+        parameter: {
+          name: string
+        }
