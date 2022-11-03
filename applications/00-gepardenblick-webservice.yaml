@@ -1,0 +1,27 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: gepardenblick
+spec:
+  components:
+    - name: gepardenblick
+      type: webservice
+      properties:
+        image: ghcr.io/gepaplexx/gepardenblick:5d8667d
+        ports:
+          - name: http
+            port: 8080
+            expose: true
+        env:
+          - name: AB_JOLOKIA_OFF
+            value: 'true'
+          - name: AB_PROMETHEUS_OFF
+            value: 'true'
+          - name: JAVA_MAX_MEM_RATIO
+            value: '95'
+          - name: JAVA_OPTIONS
+            value: '-Djava.net.preferIPv4Stack=true'
+          - name: ARGOCDTOKEN
+            value: TODO
+          - name: TOKEN
+            value: TODO

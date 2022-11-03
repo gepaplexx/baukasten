@@ -1,0 +1,26 @@
+apiVersion: core.oam.dev/v1beta1
+kind: TraitDefinition
+metadata:
+  annotations:
+    definition.oam.dev/description: "configure a route"
+  name: route
+spec:
+  appliesToWorkloads:
+    - webservice
+  schematic:
+    cue:
+      template: |
+        outputs: route: {
+          apiVersion: "route.openshift.io/v1"
+          kind: "Route"
+          metadata: name: context.name
+          spec: {
+            to: name: context.name
+            port: targetPort: "http"
+            tls: {
+              termination: "edge"
+              insecureEdgeTerminationPolicy: "None"
+            }
+            wildcardPolicy: "None"
+          }
+        }

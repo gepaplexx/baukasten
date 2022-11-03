@@ -1,0 +1,28 @@
+apiVersion: core.oam.dev/v1beta1
+kind: TraitDefinition
+metadata:
+  annotations:
+    definition.oam.dev/description: "configure a servicemonitor"
+  name: service-monitor
+spec:
+  appliesToWorkloads:
+    - backend
+  schematic:
+    cue:
+      template: |
+        outputs: servicemonitor: {
+          apiVersion: "monitoring.coreos.com/v1"
+          kind: "ServiceMonitor"
+          metadata: name: context.name
+          spec: {
+            endpoints: [ ... {
+                port: "http"
+            }]
+            selector: {
+              matchLabels: {
+                  "app.oam.dev/component": context.name
+              } 
+            }
+          }
+        }
+          

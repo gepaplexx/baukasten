@@ -1,0 +1,10 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: postgres-test
+spec:
+  components:
+    - name: postgres-test
+      type: db-postgresql
+      properties:
+        name: my-first-db

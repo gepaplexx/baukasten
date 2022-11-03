@@ -1,0 +1,20 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: gepardenblick
+spec:
+  components:
+    - name: gepardenblick
+      type: backend
+      properties:
+        image: ghcr.io/gepaplexx/gepardenblick:5d8667d
+        ports:
+          - port: 8080
+            expose: true
+        env:
+          - name: ARGOCDTOKEN
+            value: TODO
+          - name: TOKEN
+            value: TODO
+      traits:
+        - type: service-monitor
