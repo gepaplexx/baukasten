@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: mega-backend-main
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mega-backend
+    app.kubernetes.io/version: 0.0.1
+    helm.sh/chart: mega-backend-0.1.3
+  name: mega-backend-main
+  namespace: mega-backend-main
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: mega-backend-main
+      app.kubernetes.io/name: mega-backend
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/instance: mega-backend-main
+        app.kubernetes.io/name: mega-backend
+    spec:
+      containers:
+      - env:
+        - name: AB_JOLOKIA_OFF
+          value: "true"
+        - name: AB_PROMETHEUS_OFF
+          value: "true"
+        - name: JAVA_MAX_MEM_RATIO
+          value: "95"
+        - name: JAVA_OPTIONS
+          value: -Djava.net.preferIPv4Stack=true
+        - name: TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: mega-backend-credentials
+        - name: MAILER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: mailerpassword
+              name: mega-backend-credentials
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              key: dbuser
+              name: mega-backend-credentials
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: dbpassword
+              name: mega-backend-credentials
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              key: dbhost
+              name: mega-backend-credentials
+        image: ghcr.io/gepaplexx/mega-backend:0eaaf51
+        imagePullPolicy: IfNotPresent
+        name: mega-backend-main
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        - containerPort: 8443
+          protocol: TCP
+        - containerPort: 8778
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 500m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /work/config/
+          name: secret-mega-backend
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: secret-mega-backend
+        secret:
+          defaultMode: 420
+          secretName: secret-mega-backend
