@@ -1,0 +1,39 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: weckdengeparden
+spec:
+  components:
+    - name: weckdengeparden
+      type: deployment
+      properties:
+        image: "ghcr.io/gepaplexx/weckdengeparden-multidir"
+        tag: "025f7f8"
+        ports:
+          - port: 8080
+            expose: true
+          - port: 8443
+          - port: 8778
+        env:
+          - name: AB_JOLOKIA_OFF
+            value: 'true'
+          - name: AB_PROMETHEUS_OFF
+            value: 'true'
+          - name: JAVA_MAX_MEM_RATIO
+            value: '95'
+          - name: JAVA_OPTIONS
+            value: '-Djava.net.preferIPv4Stack=true'
+      traits:
+        - type: liveness
+          properties:
+            path: "/q/health/live"
+        - type: readiness
+          properties:
+            path: "/q/health/ready"
+        - type: secret
+          properties:
+            name: weckdengeparden-config
+            mountPath: "/work/config"
+            data:
+              application.yml: <SET_ME> # TODO
+              truststore.jks: <SET_ME> # TODO

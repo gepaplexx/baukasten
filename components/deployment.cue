@@ -2,7 +2,7 @@ import (
 	"strconv"
 )
 
-backend: {
+deployment: {
 	alias: ""
 	annotations: {}
 	attributes: workload: definition: {
@@ -26,12 +26,12 @@ template: {
 			replicas: parameter.replicas
 			selector: matchLabels: {
 				"app.oam.dev/component": context.name
-				"app.oam.dev/type": "backend"
+				"app.oam.dev/type": "deployment"
 			}
 			template: {
 				metadata: labels: {
 					"app.oam.dev/component": context.name
-					"app.oam.dev/type": "backend"
+					"app.oam.dev/type": "deployment"
 				}
 				spec: {
 					containers: [{
@@ -49,7 +49,6 @@ template: {
 							ports: [ for v in parameter.ports {
 							{
 								containerPort: v.port
-								// protocol: v.protocol
 								if v.name != _|_ {
 									name: v.name
 								}
@@ -68,7 +67,7 @@ template: {
 			kind:       "Service"
 			metadata: name: context.name
 			spec: {
-				selector: "app.kubernetes.io/name": context.name
+				selector: "app.oam.dev/component": context.name
 				ports: exposePorts
 				type:  parameter.exposeType
 			}

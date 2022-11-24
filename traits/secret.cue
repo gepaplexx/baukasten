@@ -2,7 +2,7 @@ secret: {
 	alias: ""
 	annotations: {}
 	attributes: {
-		appliesToWorkloads: ["backend"]
+		appliesToWorkloads: ["deployment"]
 		conflictsWith: []
 		podDisruptive:   false
 		workloadRefPath: ""
@@ -14,7 +14,7 @@ secret: {
 
 template: {
 	outputs: {
-		"secret": {
+		"\(parameter.name)": {
 			apiVersion: "v1"
 			kind: "Secret"
 			metadata: {
@@ -24,27 +24,29 @@ template: {
 		}
 	}
 	patch: {
-		spec: template: spec: {
-			// +patchKey=name
-      containers: [{
-      	name: context.name
-				volumeMounts: [{
-					name: "secret-" + parameter.name
-					mountPath: parameter.mountPath
+		if parameter.mountPath != _|_ {
+			spec: template: spec: {
+				// +patchKey=name
+      	containers: [{
+      		name: context.name
+					volumeMounts: [{
+						name: "secret-" + parameter.name
+						mountPath: parameter.mountPath
+					}]
 				}]
-			}]
 
-			volumes: [{
-				name: "secret-" + parameter.name
-				secret: {
-					secretName: parameter.name
-				}
-			}]
+				volumes: [{
+					name: "secret-" + parameter.name
+					secret: {
+						secretName: parameter.name
+					}
+				}]
+			}
 		}
 	}
 	parameter: {
 		name: string
-		mountPath: string
+		mountPath?: string // if empty => create secret only
 		data: [string]: string
 	}
 }
