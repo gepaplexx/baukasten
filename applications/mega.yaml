@@ -1,0 +1,71 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: mega
+spec:
+  components:
+    - name: mega-backend
+      type: deployment
+      properties:
+        image: "ghcr.io/gepaplexx/mega-backend"
+        tag: "0eaaf51"
+        ports:
+          - port: 8080
+            expose: true
+          - port: 8443
+          - port: 8778
+        resources:
+          requests:
+            cpu: "75m"
+        env:
+          - name: AB_JOLOKIA_OFF
+            value: 'true'
+          - name: AB_PROMETHEUS_OFF
+            value: 'true'
+          - name: JAVA_MAX_MEM_RATIO
+            value: '95'
+          - name: JAVA_OPTIONS
+            value: '-Djava.net.preferIPv4Stack=true'
+          - name: MEGA_OAUTH_ISSUER
+            value: 'https://gepardec-sso-dev.apps.play.gepaplexx.com/realms/gepardec'
+          - name: TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: mega-backend-credentials
+                key: token
+          - name: MAILER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mega-backend-credentials
+                key: mailerpassword
+      traits:
+        - type: secret
+          properties:
+            name: mega-backend-config
+            mountPath: "/work/config"
+            data:
+              application.yaml: <SET_ME> # TODO
+        - type: secret
+          properties:
+            name: mega-backend-credentials
+            data:
+              mailerpassword: <SET_ME> # TODO
+              token: <SET_ME> # TODO
+        - type: db-connector
+          properties:
+            connectTo: mega-db
+
+    - name: mega-db
+      type: db-postgres
+      properties:
+        user: mega
+        database: mega
+
+    - name: mega-frontend
+      type: deployment
+      properties:
+        image: "ghcr.io/gepaplexx/mega-frontend"
+        tag: "91de49e"
+        ports:
+          - port: 8080
+            expose: true
