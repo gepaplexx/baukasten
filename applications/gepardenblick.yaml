@@ -23,6 +23,9 @@ spec:
             value: '95'
           - name: JAVA_OPTIONS
             value: '-Djava.net.preferIPv4Stack=true'
+        resources:
+          requests:
+            cpu: "75m"
       traits:
         - type: liveness
           properties:
@@ -36,6 +39,3 @@ spec:
             mountPath: "/work/config"
             data:
               application.properties: <SET_ME> # TODO
-            resources:
-              requests:
-                cpu: "75m"
