@@ -39,3 +39,6 @@ spec:
             mountPath: "/work/config"
             data:
               application.properties: <SET_ME> # TODO
+        - type: service-monitor
+          properties:
+            path: "/q/metrics"
