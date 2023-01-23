@@ -1,11 +1,11 @@
-"db-postgres-v2": {
+"db-postgres-es": {
 	alias: ""
 	annotations: {}
 	attributes: workload: definition: {
 		apiVersion: "argoproj.io/v1alpha1"
 		kind:       "Application"
 	}
-	description: "A component to deploy a Postgres Database with ArgoCD."
+	description: "A component to deploy a Postgres Database with ArgoCD (using external secrets)."
 	labels: {}
 	type: "component"
 }
@@ -32,6 +32,9 @@ template: {
 				}, {
 					name: "auth.existingSecret"
 					value: context.name + "-connector"
+				}, {
+					name: "auth.username"
+					value: parameter.user
 				}, {
 					name: "auth.database"
 					value: parameter.database
@@ -77,8 +80,8 @@ template: {
 					}
 					secretKey: "adminPassword"
 				}]
-				secretStoreRef: { // TODO
-					name: "baukasten-cluster-store"
+				secretStoreRef: {
+					name: parameter.secretStoreName
 					kind: "ClusterSecretStore"
 				}
 				target: {
@@ -86,10 +89,11 @@ template: {
 					creationPolicy: "Owner"
 					deletionPolicy: "Delete"
 					template: data: {
-						"postgres-password": 	"{{ .adminPassword }}"
+						"admin-password": 	"{{ .adminPassword }}"
 						db:				          parameter.database
-						jdbcUrl:       			"jdbc:postgresql://" + context.name + "-postgresql." + context.namespace + ".svc.cluster.local/" + parameter.database
+						jdbcUrl:       			"jdbc:postgresql://" + context.name + "-postgresql/" + parameter.database
 						"user-password":    "{{ .userPassword }}"
+						username:						parameter.user
 					}
 				}
 			}
@@ -99,8 +103,9 @@ template: {
 		user: string
 		database: string
 		vaultKey: string
-		vaultUserPWProperty: string // TODO prüfen ob User gesetzt, dann muss auch diese Property gesetzt sein
+		vaultUserPWProperty: string
 		vaultAdminPWProperty: string
-		postgresHelmChartVersion: *"11.0.3" | string
+		postgresHelmChartVersion: *"12.1.9" | string
+		secretStoreName: context.name + "-cluster-store" | string
 	}
 }
