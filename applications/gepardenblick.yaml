@@ -42,3 +42,12 @@ spec:
         - type: service-monitor
           properties:
             path: "/q/metrics"
+        - type: alerting
+          properties:
+            rules:
+              - name: "not-running"
+                summary: "No instance of the application is running"
+                expr: 'sum(up{job="gepardenblick"}) < 1 or absent(up{job="gepardenblick"})'
+                interval: "10s"
+                for: "10s"
+                severity: "critical"
