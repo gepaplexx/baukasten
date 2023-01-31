@@ -1,19 +1,17 @@
 apiVersion: core.oam.dev/v1beta1
 kind: Application
 metadata:
-  name: gepardenblick
+  name: demo-microservice
 spec:
   components:
-    - name: gepardenblick
+    - name: demo-microservice
       type: deployment
       properties:
-        image: "ghcr.io/gepaplexx/gepardenblick"
-        tag: "5d8667d"
+        image: "ghcr.io/gepaplexx/demo-microservice"
+        tag: "413b395"
         ports:
           - port: 8080
             expose: true
-          - port: 8443
-          - port: 8778
         env:
           - name: AB_JOLOKIA_OFF
             value: 'true'
@@ -33,12 +31,6 @@ spec:
         - type: readiness
           properties:
             path: "/q/health/ready"
-        - type: secret
-          properties:
-            name: gepardenblick-config
-            mountPath: "/work/config"
-            data:
-              application.properties: <SET_ME> # TODO
         - type: service-monitor
           properties:
             path: "/q/metrics"
@@ -47,7 +39,7 @@ spec:
             rules:
               - name: "not-running"
                 summary: "No instance of the application is running"
-                expr: 'sum(up{job="gepardenblick"}) < 1 or absent(up{job="gepardenblick"})'
+                expr: 'sum(up{job="demo-microservice"}) < 1 or absent(up{job="demo-microservice"})'
                 interval: "10s"
                 for: "10s"
                 severity: "critical"
