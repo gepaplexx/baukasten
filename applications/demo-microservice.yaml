@@ -44,4 +44,3 @@ spec:
                 for: "10s"
                 severity: "critical"
         - type: dashboard
-          properties:
