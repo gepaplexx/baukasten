@@ -1,0 +1,13 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: whoami2
+spec:
+  components:
+    - name: whoami2
+      type: basicapp@v2.0
+      properties:
+        image: containous/whoami
+        replicas: 1
+        port: 8282
+        targetPort: 80

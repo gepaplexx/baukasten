@@ -1,0 +1,11 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: whoami
+spec:
+  components:
+    - name: whoami
+      type: basicapp@v1.0
+      properties:
+        image: containous/whoami
+        replicas: 1
