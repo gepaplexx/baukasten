@@ -43,4 +43,4 @@ spec:
                 interval: "10s"
                 for: "10s"
                 severity: "critical"
-        - type: dashboard
+        - type: java-dashboard

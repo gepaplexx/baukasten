@@ -1,4 +1,4 @@
-dashboard: {
+"java-dashboard": {
 	alias: ""
 	annotations: {}
 	attributes: {
@@ -14,11 +14,11 @@ dashboard: {
 
 template: {
 	outputs: {
-		dashboard: {
+		"java-dashboard": {
 			apiVersion: "integreatly.org/v1alpha1"
 			kind:       "GrafanaDashboard"
 			metadata: {
-				name: "dashboard-" + context.name
+				name: "java-dashboard-" + context.name
 				labels: {
 					dashboard: "application"
 				}
