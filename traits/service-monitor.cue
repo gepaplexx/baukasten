@@ -36,9 +36,13 @@ template: {
 		}
 	}
 	parameter: {
+		// +usage=Polling interval of metrics
 		interval: *"30s" | string
+		// +usage=Metrics endpoint path
 		path: string
+		// +usage=Metrics endpoint port
 		port: *8080 | int
+		// +usage=Metrics endpoint URL schema
 		scheme: *"http" | string
 	}
 }
