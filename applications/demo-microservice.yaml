@@ -43,4 +43,15 @@ spec:
                 interval: "10s"
                 for: "10s"
                 severity: "critical"
+        # Example for Loki alerts, not tested yet
+#        - type: loki-alerting
+#          properties:
+#            groups:
+#              - interval: "10s"
+#                limit: 0
+#                name: "group-1"
+#                rules:
+#                  - alert: "alert-1"
+#                    expr: "sum(count_over_time({level=\"error\",kubernetes_namespace_name=\"scch-grafana-playground\"} | json | kubernetes_container_name=\"demo-microservice\" [30s]))"
+#                    for: "10s"
         - type: java-dashboard
