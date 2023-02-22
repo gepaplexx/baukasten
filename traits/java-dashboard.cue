@@ -1138,6 +1138,7 @@ template: {
 		}
 	}
 	parameter: {
+		// +usage=Override uid of this dashboard, useful to prevent collisions. Default value: Component name
 		uid: *context.name | string
 	}
 }
