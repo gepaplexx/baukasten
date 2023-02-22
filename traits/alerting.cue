@@ -40,12 +40,19 @@ template: {
 		}
 	}
 	parameter: {
+		// +usage=List of alerting rules
 		rules: [...{
+			// +usage=Alert name
 			name: string
+			// +usage=Description of the alert
 			summary: string
+			// +usage=PromQL Expression
 			expr: string
+			// +usage=Polling interval
 			interval: *"30s" | string
+			// +usage=Fire this alert, if the condition is satisfied for this amount of time
 			for: string
+			// +usage=Severity of the alert
 			severity: "critical" | "warning" | "info" | "none"
 		}]
 	}
