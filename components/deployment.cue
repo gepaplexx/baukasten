@@ -1,5 +1,6 @@
 import (
 	"strconv"
+	"strings"
 )
 
 deployment: {
@@ -36,8 +37,41 @@ template: {
 				spec: {
 					containers: [{
 						name: context.name
-						if parameter["env"] != _|_ {
-							env: parameter.env
+						if parameter["env"] != _|_ for e in parameter["env"] {
+							env: [
+								for i, v in parameter.env {
+									name: v.name
+									if v.valueFrom != _|_ {
+										valueFrom: {
+											if v.valueFrom.configMapKeyRef != _|_ {
+												configMapKeyRef: {
+													name: v.valueFrom.configMapKeyRef.name
+													key: v.valueFrom.configMapKeyRef.key
+												}
+											}
+
+											if v.valueFrom.secretKeyRef != _|_ {
+												secretKeyRef: {
+													name: v.valueFrom.secretKeyRef.name
+													key: v.valueFrom.secretKeyRef.key
+												}
+											}
+
+											if v.valueFrom.hcVault != _|_ {
+												secretKeyRef: {
+													name: context.name + "-secret"
+													// name: parameter.name + "_" + strings.Replace(v.valueFrom.hcVault.key, "/", "_", -1)
+													key: v.valueFrom.hcVault.property
+												}
+											}
+										}
+									}
+
+									if v.value != _|_ {
+										value: v.value
+									}
+								}
+							]
 						}
 						image: parameter.image + ":" + parameter.tag
 						if parameter["port"] != _|_ && parameter["ports"] == _|_ {
@@ -106,6 +140,43 @@ template: {
       	}
     	}
   	}
+
+  	if len(parameter.env) > 0 {
+  			_data: [for _, v in parameter.env if v.valueFrom.hcVault != _|_ {
+  				remoteRef: {
+  					key: v.valueFrom.hcVault.key
+						property: v.valueFrom.hcVault.property
+					}
+					secretKey: v.valueFrom.hcVault.property
+  			}]
+  			_target: [for _, v in parameter.env if v.valueFrom.hcVault != _|_ {
+  				"\(v.valueFrom.hcVault.property)": "{{ ." + v.valueFrom.hcVault.property + " }}"
+  			}]
+  			if len(_data) > 0 {
+  				externalSecret: {
+  					apiVersion: "external-secrets.io/v1beta1"
+						kind: "ExternalSecret"
+						metadata: name: context.name + "-external-secret"
+						spec: {
+							data: _data
+							secretStoreRef: {
+								name: parameter.secretStoreName
+								kind: "ClusterSecretStore"
+							}
+							target: {
+								name: context.name + "-secret"
+								creationPolicy: "Owner"
+								deletionPolicy: "Delete"
+								template: data: {
+									for _, val in _target {
+										val
+									}
+								}
+							}
+						}
+  				}
+  			}
+  	}
 	}
 
 	parameter: {
@@ -126,9 +197,18 @@ template: {
 					name: string
 					key: string
 				}
+
+				hcVault?: {
+					key: string
+					property: string
+				}
 			}
 		}]
+		secretStoreName: *(context.name + "-secret-store") | string
 		resources: {
+			limits: {
+				memory: *"400Mi" | string
+			}
 			requests: {
 				cpu: *"100m" | string
 				memory: *"128Mi" | string
@@ -174,4 +254,5 @@ exposePorts:
   	}
 	}]
 }
+
 
