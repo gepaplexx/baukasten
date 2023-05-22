@@ -1,0 +1,46 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: mega
+spec:
+  components:
+    - name: mega-backend
+      type: deployment
+      properties:
+        image: "ghcr.io/gepaplexx/mega-backend"
+        tag: "0eaaf51"
+        ports:
+          - port: 8080
+            expose: true
+          - port: 8443
+          - port: 8778
+        resources:
+          requests:
+            cpu: "75m"
+        # secretStoreName: "mega-backend-ss" OPTIONAL
+        env:
+          - name: MEGA_OAUTH_ISSUER
+            value: 'https://gepardec-sso-dev.apps.play.gepaplexx.com/realms/gepardec'
+          - name: TOKEN
+            valueFrom:
+              hcVault:
+                key: "mega/backend"
+                property: "token"
+          - name: MAILER_PASSWORD
+            valueFrom:
+              hcVault:
+                key: "mega/backend"
+                property: "mailerpassword"
+      traits:
+        - type: db-connector-es
+          properties:
+            connectTo: mega-db
+    - name: mega-db
+      type: db-postgres-es
+      properties:
+        user: "mega"
+        database: "mega"
+        vaultKey: "mega/db"
+        vaultUserPWProperty: "mega_user_pw"
+        vaultAdminPWProperty: "postgres_pw"
+        secretStoreName: "baukasten-cluster-store"
