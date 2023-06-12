@@ -17,7 +17,7 @@ template: {
 		metadata: name: context.name
 		spec: {
 			destination: {
-				namespace: context.namespace
+				namespace: parameter.namespace
 				server:    "https://kubernetes.default.svc"
 			}
 			project: "default" // TODO
@@ -61,7 +61,10 @@ template: {
 		connector: {
 			apiVersion: "external-secrets.io/v1beta1"
 			kind: "ExternalSecret"
-			metadata: name: context.name + "-connector"
+			metadata: {
+				name: context.name + "-connector"
+				namespace: parameter.namespace
+			}
 			spec: {
 				data: [{
 					remoteRef: {
@@ -100,6 +103,7 @@ template: {
 		}
 	}
 	parameter: {
+		namespace: string
 		user: string
 		database: string
 		vaultKey: string
