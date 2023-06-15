@@ -113,7 +113,10 @@ template: {
       	kind: "Route"
       	metadata: name: context.name
       	spec: {
-        	to: name: context.name
+        	to: {
+        		kind: "Service"
+        		name: context.name
+        	}
         	if p.name != _|_ {
           	port: targetPort: p.name
         	}
