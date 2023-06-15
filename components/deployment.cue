@@ -99,7 +99,10 @@ template: {
 		service: {
 			apiVersion: "v1"
 			kind:       "Service"
-			metadata: name: context.name
+			metadata: {
+				name: context.name
+				namespace: parameter.namespace
+			}
 			spec: {
 				selector: "app.oam.dev/component": context.name
 				ports: exposePorts
@@ -111,7 +114,13 @@ template: {
     	route: {
       	apiVersion: "route.openshift.io/v1"
       	kind: "Route"
-      	metadata: name: context.name
+      	metadata: {
+      		name: context.name
+					namespace: parameter.namespace
+					annotations: {
+						"cert-manager.io/cluster-issuer": "letsencrypt-production"
+					}
+      	}
       	spec: {
         	to: {
         		kind: "Service"
