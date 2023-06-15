@@ -168,7 +168,10 @@ template: {
   				externalSecret: {
   					apiVersion: "external-secrets.io/v1beta1"
 						kind: "ExternalSecret"
-						metadata: name: context.name + "-external-secret"
+						metadata: {
+							name: context.name + "-external-secret"
+							namespace: parameter.namespace
+						}
 						spec: {
 							data: _data
 							secretStoreRef: {

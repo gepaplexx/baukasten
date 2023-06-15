@@ -103,7 +103,7 @@ template: {
 		}
 	}
 	parameter: {
-		namespace: string
+		namespace: *context.namespace | string
 		user: string
 		database: string
 		vaultKey: string

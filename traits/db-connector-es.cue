@@ -19,6 +19,7 @@ template: {
 		kind:       "ServiceBinding"
 		metadata: {
 			name:      context.name + "-db-binding"
+			namespace: parameter.namespace
 		}
 		spec: {
 			bindAsFiles: false
@@ -51,5 +52,6 @@ template: {
 	patch: {}
 	parameter: {
 		connectTo: string
+		namespace: *context.namespace | string
 	}
 }
