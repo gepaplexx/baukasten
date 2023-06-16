@@ -122,6 +122,9 @@ template: {
 					}
       	}
       	spec: {
+      		if parameter.host != _|_ {
+      			host: parameter.route.host
+      		}
         	to: {
         		kind: "Service"
         		name: context.name
@@ -244,6 +247,7 @@ template: {
   	exposeType: *"ClusterIP" | "NodePort" | "LoadBalancer"
 
 		route: {
+			host?: string
 			termination: *"edge" | "passthrough" | "reencrypt"
 			insecureEdgeTerminationPolicy: *"None" | "Redirect" | "Allow"
 			certificate?: string
