@@ -118,7 +118,8 @@ template: {
       		name: context.name
 					namespace: parameter.namespace
 					annotations: {
-						"cert-manager.io/cluster-issuer": "letsencrypt-production"
+						"cert-manager.io/issuer-kind": "ClusterIssuer"
+  					"cert-manager.io/issuer-name": "letsencrypt-production"
 					}
       	}
       	spec: {
