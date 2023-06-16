@@ -122,8 +122,8 @@ template: {
 					}
       	}
       	spec: {
-      		if parameter.host != _|_ {
-      			host: parameter.route.host
+      		if p.host != _|_ {
+      			host: p.host
       		}
         	to: {
         		kind: "Service"
@@ -242,12 +242,12 @@ template: {
 			expose: *false | bool
 			// +usage=exposed node port. Only Valid when exposeType is NodePort
 			nodePort?: int
+			host?: string
 		}]
 		// +usage=Specify what kind of Service you want. options: \\\"ClusterIP\\\", \\\"NodePort\\\", \\\"LoadBalancer\\\"
   	exposeType: *"ClusterIP" | "NodePort" | "LoadBalancer"
 
 		route: {
-			host?: string
 			termination: *"edge" | "passthrough" | "reencrypt"
 			insecureEdgeTerminationPolicy: *"None" | "Redirect" | "Allow"
 			certificate?: string
